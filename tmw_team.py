@@ -3,6 +3,8 @@ import dotenv
 dotenv.load_dotenv()
 
 from agno.agent import Agent
+from agno.team import Team, TeamMode
+
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.tools.hackernews import HackerNewsTools
 from agno.os import AgentOS
@@ -29,6 +31,21 @@ quadrant_client = qdrant_client.QdrantClient(
     url = QDRANT_CLUSTER_ENDPOINT,
     api_key = QDRANT_API_KEY,
 )
+
+def read_instructions(file_path: str) -> str:
+    """
+    Lê o conteúdo de um arquivo de instruções.
+
+    Args:
+        file_path (str): O caminho para o arquivo de instruções.
+
+    Returns:
+        str: O conteúdo do arquivo de instruções.
+    """
+    with open(file_path, "r") as f:
+        instructions = f.read()
+    return instructions
+
 
 def get_relevant_documents(query: str, top_k: int = 10):
     """
@@ -71,21 +88,55 @@ model = OpenAILike(
     temperature=0.7,
 )
 
-with open("./instructions-assistent-agent.md", "r") as f:
-    instructions = f.read()
 
-agent = Agent(
-    name="Agent Assistant",
-    model=model,
-    db=SqliteDb("database.db"),
-    instructions=instructions,
-    role="Especialista em roteiros de conteúdo técnico para público geral, com foco em tecnologia, ciência e inovação",
+## AGENTE DO CONTEXTO TMW
+instructions_tmw_context = read_instructions("./instructions-tmw-research-agent.md")
+
+tmw_research_agent = Agent(
+    name="TMW Research Agent",
+    instructions=instructions_tmw_context,
+    role="Especialista em pesquisa e análise de informações sobre a Área de Dados, sobre o material de Téo Calvo e Téo Me Why, com foco em fornecer respostas detalhadas e contextualizadas.",
     markdown=True,
-    tools=[get_relevant_documents, DuckDuckGoTools(), HackerNewsTools()],
+    tools=[get_relevant_documents],
     tool_call_limit=5,
 )
 
 
-agent_os = AgentOS(agents=[agent], tracing=True)
-app = agent_os.get_app()
+## AGENTE DO CONTEXTO WEB
+instructions_web_research_agent = read_instructions("./instructions-web-research-agent.md")
 
+tmw_web_agent = Agent(
+    name="WEB Research Agent",
+    instructions=instructions_web_research_agent,
+    role="Especialista em pesquisa e análise de informações na Web sobre temas quentes na área de dados e tecnologia.",
+    markdown=True,
+    tools=[DuckDuckGoTools(), HackerNewsTools()],
+    tool_call_limit=5,
+)
+
+
+## AGENTE DA ESCRITA
+instructions_writing_agent = read_instructions("./instructions-writing-agent.md")
+
+tmw_writing_agent = Agent(
+    name="Writing Agent",
+    instructions=instructions_writing_agent,
+    role="Especialista em escrita e comunicação, com foco em fornecer respostas detalhadas e contextualizadas sobre a Área de Dados, sobre o material de Téo Calvo e Téo Me Why.",
+    markdown=True,
+)
+
+## TIME TMW
+instructions_team = read_instructions("./instructions-team.md")
+
+
+team = Team(
+    name="TMW Team",
+    members=[tmw_research_agent, tmw_web_agent, tmw_writing_agent],
+    mode=TeamMode.tasks,
+    instructions=instructions_team,
+    model=model,
+    db=SqliteDb("tmw_team.db"),
+)
+
+agent_os = AgentOS(teams=[team], tracing=True)
+app = agent_os.get_app()
