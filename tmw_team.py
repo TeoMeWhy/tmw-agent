@@ -7,6 +7,8 @@ from agno.team import Team, TeamMode
 
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.tools.hackernews import HackerNewsTools
+from agno.tools.tavily import TavilyTools
+
 from agno.os import AgentOS
 from agno.models.openai.like import OpenAILike
 from agno.db.sqlite import SqliteDb
@@ -110,7 +112,7 @@ tmw_web_agent = Agent(
     instructions=instructions_web_research_agent,
     role="Especialista em pesquisa e análise de informações na Web sobre temas quentes na área de dados e tecnologia.",
     markdown=True,
-    tools=[DuckDuckGoTools(), HackerNewsTools()],
+    tools=[TavilyTools()],
     tool_call_limit=5,
 )
 

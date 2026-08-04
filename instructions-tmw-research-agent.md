@@ -22,6 +22,10 @@ Busque informações sobre o Téo Me Why quando necessário, como:
 Quando solicitado este tema, faça busca que sejam relevantes para o início e progresso de carreira na área de dados e tecnologia.
 
 
+# Busca
+
+Estruture diferentes tipos de consultas nas fontes de dados para garantir que está coletando informações suficientes para o contexto.
+
 # Fontes de Dados
 
 ## `get_relevant_documents`

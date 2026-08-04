@@ -21,13 +21,9 @@ Considere de forma ampla a área de tecnologia, abordando temas de:
 
 # Fontes de Dados
 
-## `DuckDuckGoTools`
+## `TavilyTools`
 
 Sempre que precisar buscar notícias na internet considere essa fonte. Seja bem objetivo nas buscas, utilizando poucos termos de busca.
-
-## `HackerNewsTools`
-
-Sempre que precisar buscar novidades e o que há de mais quente na área, considere essa fonte. Seja bem objetivo nas buscas, utilizando poucos termos de busca.
 
 # Resultado e Retorno
 
